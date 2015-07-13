@@ -44,9 +44,9 @@ class UserTest < ActiveSupport::TestCase
       alice+bob@baz.cn
       ]
 
-      valid_addresses.each do |addr|
-	@user.email = addr
-	assert @user.valid?, "#{addr.inspect} should be valid"
+    valid_addresses.each do |addr|
+      @user.email = addr
+      assert @user.valid?, "#{addr.inspect} should be valid"
       end
     end
 
@@ -65,19 +65,27 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "email addresses shoud be unique" do
-      duplicate_user = @user.dup
-      @user.save
-      duplicate_user.email = @user.email.upcase
-      assert_not duplicate_user.valid?
+    duplicate_user = @user.dup
+    @user.save
+    duplicate_user.email = @user.email.upcase
+    assert_not duplicate_user.valid?
+  end
+
+  test "email should be lowercase" do
+    wild_email = "LeEtNoObS@oMg.CoM"
+    @user.email = wild_email
+    @user.save
+    assert_equal wild_email.downcase, @user.reload.email
   end
 
   test "password shoud be present (nonblank)" do
-      @user.password = @user.password_confirmation = " " * 6
-      assert_not @user.valid?
+    @user.password = @user.password_confirmation = " " * 6
+    assert_not @user.valid?
   end
 
   test "password should have minimum length" do
-      @user.password = @user.password_confirmation = "a" * 5
-      assert_not @user.valid?
+    @user.password = @user.password_confirmation = "a" * 5
+    assert_not @user.valid?
   end
+
 end
